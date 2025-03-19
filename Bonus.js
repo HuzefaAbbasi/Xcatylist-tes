@@ -16,3 +16,24 @@ app.delete("/tasks", async (req, res) => {
     }
 });
 
+
+// BQ2.
+// Design an API that allows searching tasks by title or status with pagination.
+
+app.get("/tasks", async (req, res) => {
+    try{
+        const page = req.query.page || 1;
+        const limit = req.query.limit || 10;
+        const skip = (page - 1) * limit;
+        const tasks = await Task.find({
+            $or: [
+                { title: req.query.title },
+                { status: req.query.status }
+            ]
+        }).limit(limit).skip(skip);
+        res.status(200).json(tasks);
+    }
+    catch(err){
+        return res.status(400).json("Something went wrong");
+    }
+});
